@@ -19,13 +19,13 @@ describe('htmlParser test', () => {
               "nodeType": 3
             }
           ],
-          "NodeType": 1
+          "nodeType": 1
         }
       ],
-      "NodeType": 1
+      "nodeType": 1
     }
   ],
-  "NodeType": 1
+  "nodeType": 1
 }`;
 
   const htmlTemplate2 = `{
@@ -53,21 +53,21 @@ describe('htmlParser test', () => {
               "nodeType": 3
             }
           ],
-          "NodeType": 1
+          "nodeType": 1
         },
         {
           "nodeValue": " ",
           "nodeType": 3
         }
       ],
-      "NodeType": 1
+      "nodeType": 1
     },
     {
       "nodeValue": " ",
       "nodeType": 3
     }
   ],
-  "NodeType": 1
+  "nodeType": 1
 }`;
 
   test('parse html template', () => {
@@ -98,7 +98,7 @@ describe('htmlParser test', () => {
     body.children.push(div);
     div.children.push(text('test!'));
 
-    expect(JSON.stringify(parser.parse(html), null, 2)).toBe(htmlTemplate);
+    expect(JSON.stringify(html, null, 2)).toBe(htmlTemplate);
   });
 
   const htmlTemplate3 = `{
@@ -108,7 +108,7 @@ describe('htmlParser test', () => {
     "id": "div",
     "data-index": "1"
   },
-  children: [
+  "children": [
     {
       "nodeValue": "test!",
       "nodeType": 3

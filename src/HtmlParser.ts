@@ -70,7 +70,7 @@ export default class Parser {
 
   parseText(parent: Element) {
     let str = '';
-    while (this.index < this.len && !(this.html[this.index] === '<' && /\w/.test(this.html[this.index + 1]))) {
+    while (this.index < this.len && !(this.html[this.index] === '<' && /\w|\//.test(this.html[this.index + 1]))) {
       str += this.html[this.index];
       this.index++;
     }

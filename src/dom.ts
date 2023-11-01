@@ -1,18 +1,18 @@
 export enum NodeType {
   ELEMENT = 1,
-  TEXT = 3
+  TEXT = 3,
 }
 
 export interface Element {
-  tagName: string,
-  attributes: Record<string, string>,
-  children: Node[],
-  NodeType: NodeType.ELEMENT
+  tagName: string;
+  attributes: Record<string, string>;
+  children: Node[];
+  nodeType: NodeType.ELEMENT;
 }
 
 export interface Text {
-  nodeValue: string,
-  NodeType: NodeType.TEXT
+  nodeValue: string;
+  nodeType: NodeType.TEXT;
 }
 
 export type Node = Element | Text;
@@ -22,13 +22,13 @@ export function element(tagName: string): Element {
     tagName,
     attributes: {},
     children: [],
-    NodeType: NodeType.ELEMENT
-  }
+    nodeType: NodeType.ELEMENT,
+  };
 }
 
 export function text(nodeValue: string): Text {
   return {
     nodeValue,
-    NodeType: NodeType.TEXT
-  }
+    nodeType: NodeType.TEXT,
+  };
 }
