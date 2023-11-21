@@ -1,26 +1,58 @@
-import { element, text } from './dom';
-import type { Element } from './dom';
+import Parser from './Parser';
 
-export default class Parser {
-  private html = '';
-  private index = 0;
-  private len = 0;
+enum NodeType {
+  Element = 1,
+  Text = 3,
+}
+
+interface Element {
+  tagName: string;
+  attributes: Record<string, string>;
+  children: Node[];
+  nodeType: NodeType.Element;
+}
+
+interface Text {
+  nodeValue: string;
+  nodeType: NodeType.Text;
+}
+
+type Node = Element | Text;
+
+export function element(tagName: string): Element {
+  return {
+    tagName,
+    attributes: {},
+    children: [],
+    nodeType: NodeType.Element,
+  };
+}
+
+export function text(nodeValue: string): Text {
+  return {
+    nodeValue,
+    nodeType: NodeType.Text,
+  };
+}
+
+export default class HtmlParser extends Parser {
   private stack: string[] = [];
 
-  parse(html: string) {
-    if (typeof html !== 'string') {
+  parse(rawText: string) {
+    if (typeof rawText !== 'string') {
       throw new Error('parameter 0 is not a string');
     }
 
-    this.html = html;
-    this.len = html.length;
+    this.rawText = rawText;
+    this.len = this.rawText.length;
     this.index = 0;
     this.stack = [];
 
     const root = element('root');
     while (this.index < this.len) {
       this.removeSpaces();
-      if (this.html[this.index].startsWith('<')) {
+      console.log(this.index, this.rawText, this.rawText[this.index]);
+      if (this.rawText[this.index].startsWith('<')) {
         this.index++;
         this.parseElement(root);
       } else {
@@ -43,10 +75,10 @@ export default class Parser {
 
     while (this.index < this.len) {
       this.removeSpaces();
-      if (this.html[this.index].startsWith('<')) {
+      if (this.rawText[this.index].startsWith('<')) {
         this.index++;
         this.removeSpaces();
-        if (this.html[this.index].startsWith('/')) {
+        if (this.rawText[this.index].startsWith('/')) {
           this.index++;
           const startTag = this.stack.pop();
           const endTag = this.parseTag();
@@ -54,7 +86,7 @@ export default class Parser {
             throw new Error(`The end tag ${endTag} does not match the start tag ${startTag}`);
           }
 
-          while (this.index < this.len && this.html[this.index] !== '>') {
+          while (this.index < this.len && this.rawText[this.index] !== '>') {
             this.index++;
           }
           break;
@@ -70,11 +102,11 @@ export default class Parser {
 
   parseText(parent: Element) {
     let str = '';
-    while (this.index < this.len && !(this.html[this.index] === '<' && /\w|\//.test(this.html[this.index + 1]))) {
-      str += this.html[this.index];
+    while (this.index < this.len && !(this.rawText[this.index] === '<' && /\w|\//.test(this.rawText[this.index + 1]))) {
+      str += this.rawText[this.index];
       this.index++;
     }
-    this.sliceHtml();
+    this.sliceText();
     parent.children.push(text(removeExtraSpaces(str)));
   }
 
@@ -83,17 +115,17 @@ export default class Parser {
 
     this.removeSpaces();
 
-    while (this.index < this.len && this.html[this.index] !== ' ' && this.html[this.index] !== '>') {
-      tag += this.html[this.index];
+    while (this.index < this.len && this.rawText[this.index] !== ' ' && this.rawText[this.index] !== '>') {
+      tag += this.rawText[this.index];
       this.index++;
     }
 
-    this.sliceHtml();
+    this.sliceText();
     return tag;
   }
 
   private parseAttributes(elementObject: Element) {
-    while (this.index < this.len && this.html[this.index] !== '>') {
+    while (this.index < this.len && this.rawText[this.index] !== '>') {
       this.removeSpaces();
       this.parseAttribute(elementObject);
       this.removeSpaces();
@@ -104,43 +136,32 @@ export default class Parser {
   private parseAttribute(elementObject: Element) {
     let attribute = '';
     let value = '';
-    while (this.index < this.len && this.html[this.index] !== '=' && this.html[this.index] !== '>') {
-      attribute += this.html[this.index];
+    while (this.index < this.len && this.rawText[this.index] !== '=' && this.rawText[this.index] !== '>') {
+      attribute += this.rawText[this.index];
       this.index++;
     }
 
-    this.sliceHtml();
+    this.sliceText();
     attribute = attribute.trim();
     if (!attribute) return;
 
     this.index++;
     let startSymbol = '';
-    if (this.html[this.index] === "'" || this.html[this.index] === '"') {
-      startSymbol = this.html[this.index];
+    if (this.rawText[this.index] === "'" || this.rawText[this.index] === '"') {
+      startSymbol = this.rawText[this.index];
       this.index++;
     }
-    while (this.index < this.len && this.html[this.index] !== startSymbol) {
-      value += this.html[this.index];
+    while (this.index < this.len && this.rawText[this.index] !== startSymbol) {
+      value += this.rawText[this.index];
       this.index++;
     }
     this.index++;
     elementObject.attributes[attribute] = value.trim();
-    this.sliceHtml();
-  }
-
-  private removeSpaces() {
-    while (this.index < this.len && (this.html[this.index] === ' ' || this.html[this.index] === '\n')) {
-      this.index++;
-    }
-    this.sliceHtml();
-  }
-
-  private sliceHtml() {
-    this.html = this.html.slice(this.index);
-    this.len = this.html.length;
-    this.index = 0;
+    this.sliceText();
   }
 }
+
+// a  b  c => a b c 删除字符之间多余的空格，只保留一个
 function removeExtraSpaces(str: string): string {
   let index = 0;
   let len = str.length;
