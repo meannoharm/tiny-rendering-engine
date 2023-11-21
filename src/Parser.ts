@@ -7,6 +7,7 @@ export default class Parser {
     while (this.index < this.len && (this.rawText[this.index] === ' ' || this.rawText[this.index] === '\n')) {
       this.index++;
     }
+    this.sliceText();
   }
 
   protected sliceText() {

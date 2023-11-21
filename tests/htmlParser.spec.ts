@@ -33,17 +33,9 @@ describe('htmlParser test', () => {
   "attributes": {},
   "children": [
     {
-      "nodeValue": " ",
-      "nodeType": 3
-    },
-    {
       "tagName": "body",
       "attributes": {},
       "children": [
-        {
-          "nodeValue": " ",
-          "nodeType": 3
-        },
         {
           "tagName": "div",
           "attributes": {},
@@ -54,17 +46,9 @@ describe('htmlParser test', () => {
             }
           ],
           "nodeType": 1
-        },
-        {
-          "nodeValue": " ",
-          "nodeType": 3
         }
       ],
       "nodeType": 1
-    },
-    {
-      "nodeValue": " ",
-      "nodeType": 3
     }
   ],
   "nodeType": 1
@@ -74,13 +58,11 @@ describe('htmlParser test', () => {
     const parser = new HtmlParser();
     const parseResult = JSON.stringify(parser.parse('<html><body><div>test!</div></body></html>'), null, 2);
     const parseResult2 = JSON.stringify(
-      parser.parse(`
-      <html>
-        <body>
-          <div>test!</div>
-        </body>
-      </html>
-    `),
+      parser.parse(`<html>
+  <body>
+    <div>test!</div>
+  </body>
+</html>`),
       null,
       2,
     );
