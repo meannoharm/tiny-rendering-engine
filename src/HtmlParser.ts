@@ -51,7 +51,6 @@ export default class HtmlParser extends Parser {
     const root = element('root');
     while (this.index < this.len) {
       this.removeSpaces();
-      console.log(this.index, this.rawText, this.rawText[this.index]);
       if (this.rawText[this.index].startsWith('<')) {
         this.index++;
         this.parseElement(root);
