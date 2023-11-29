@@ -1,23 +1,23 @@
 import Parser from './Parser';
 
-enum NodeType {
+export enum NodeType {
   Element = 1,
   Text = 3,
 }
 
-interface Element {
+export interface Element {
   tagName: string;
   attributes: Record<string, string>;
   children: Node[];
   nodeType: NodeType.Element;
 }
 
-interface Text {
+export interface Text {
   nodeValue: string;
   nodeType: NodeType.Text;
 }
 
-type Node = Element | Text;
+export type Node = Element | Text;
 
 export function element(tagName: string): Element {
   return {
